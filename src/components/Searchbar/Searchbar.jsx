@@ -1,60 +1,51 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Component } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import css from './Searchbar.module.css';
 
-class Searchbar extends Component {
-  state = {
-    searchQuery: '',
+const Searchbar = ({ onSubmit }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleChange = ({ target: { name, value } }) => {
+    setSearchQuery(value.toLowerCase());
   };
 
-  static propTypes = { onSubmit: PropTypes.func.isRequired };
-
-  handleChange = ({ target: { name, value } }) => {
-    this.setState({ [name]: value.toLowerCase() });
-  };
-
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
-    if (this.state.searchQuery.trim() === '') {
+    if (searchQuery.trim() === '') {
       toast.error('Oops! Enter a search query.');
       return;
     }
 
-    this.props.onSubmit(this.state.searchQuery);
-    this.reset();
+    onSubmit(searchQuery);
+    reset();
   };
 
-  reset = () => {
-    this.setState({ searchQuery: '' });
+  const reset = () => {
+    setSearchQuery('');
   };
 
-  render() {
-    const { searchQuery } = this.state;
-    return (
-      <div className={css.Searchbar}>
-        <form
-          onSubmit={this.handleSubmit}
-          className={css.SearchForm}
-          id="search-form"
-        >
-          <input
-            type="search"
-            name="searchQuery"
-            autoComplete="off"
-            placeholder="Search images..."
-            className={css.SearchFormInput}
-            onChange={this.handleChange}
-            value={searchQuery}
-          />
-          <button type="submit" className={css.SearchFormButton}>
-            <i className="fa-solid fa-magnifying-glass"></i>
-          </button>
-        </form>
-      </div>
-    );
-  }
-}
+  return (
+    <div className={css.Searchbar}>
+      <form onSubmit={handleSubmit} className={css.SearchForm} id="search-form">
+        <input
+          type="search"
+          name="searchQuery"
+          autoComplete="off"
+          placeholder="Search images..."
+          className={css.SearchFormInput}
+          onChange={handleChange}
+          value={searchQuery}
+        />
+        <button type="submit" className={css.SearchFormButton}>
+          <i className="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+    </div>
+  );
+};
+
+Searchbar.propTypes = { onSubmit: PropTypes.func.isRequired };
 
 export default Searchbar;
