@@ -1,49 +1,40 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import Modal from '../Modal/Modal';
 import css from './ImageGallery.module.css';
 
-class ImageGallery extends Component {
-  state = {
-    showModal: false,
-    selectedImage: null,
+const ImageGallery = ({ data }) => {
+  const [showModal, setShowModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const toggleModal = image => {
+    setShowModal(!showModal);
+    setSelectedImage(image);
   };
 
-  static propTypes = { data: PropTypes.array.isRequired };
+  return (
+    <>
+      {showModal && (
+        <Modal onClick={toggleModal}>
+          {selectedImage && (
+            <img src={selectedImage.largeImageURL} alt={selectedImage.tags} />
+          )}
+        </Modal>
+      )}
+      <ul className={css.ImageGallery}>
+        {data.map(image => (
+          <ImageGalleryItem
+            onClick={toggleModal}
+            key={image.id}
+            image={image}
+          />
+        ))}
+      </ul>
+    </>
+  );
+};
 
-  toggleModal = image => {
-    this.setState(prevState => ({
-      showModal: !prevState.showModal,
-      selectedImage: image,
-    }));
-  };
-
-  render() {
-    const { showModal, selectedImage } = this.state;
-    const { data } = this.props;
-
-    return (
-      <>
-        {showModal && (
-          <Modal onClick={this.toggleModal}>
-            {selectedImage && (
-              <img src={selectedImage.largeImageURL} alt={selectedImage.tags} />
-            )}
-          </Modal>
-        )}
-        <ul className={css.ImageGallery}>
-          {data.map(image => (
-            <ImageGalleryItem
-              onClick={this.toggleModal}
-              key={image.id}
-              image={image}
-            />
-          ))}
-        </ul>
-      </>
-    );
-  }
-}
+ImageGallery.propTypes = { data: PropTypes.array.isRequired };
 
 export default ImageGallery;
